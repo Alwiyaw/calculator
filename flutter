@@ -1,1 +1,113 @@
+import 'package:flutter/material.dart';
 
+void main() {
+  runApp(const kalkulatorApp());
+}
+
+class kalkulatorApp extends StatelessWidget {
+  const kalkulatorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "KALKULATOR BMI",
+      debugShowCheckedModeBanner: false,
+      home: kalkulatorScreen(),
+    );
+  }
+}
+
+class kalkulatorScreen extends StatefulWidget {
+  const kalkulatorScreen({super.key});
+
+  @override
+  State<kalkulatorScreen> createState() => _kalkulatorScreenState();
+}
+
+class _kalkulatorScreenState extends State<kalkulatorScreen> {
+  final _weightController = TextEditingController();
+  final _heightController = TextEditingController();
+
+  double? _bmiResult;
+  String _bmiInterpretation = "Silahkan masukan data anda!";
+
+  void _calculateBMI(){
+    final double weight = double.tryParse(_weightController.text) ?? 0;
+    final double heightInCM = double.tryParse(_heightController.text) ?? 0;
+
+    setState(() {
+      final double heightInM = heightInCM/100;
+      final double bmi = weight / (heightInM*heightInM);
+      _bmiResult=bmi;
+
+      if(bmi<18.5){
+        _bmiInterpretation = "kekurangan berat badan";
+      }else if(bmi< 25){
+        _bmiInterpretation = "berat badan ideal";
+      }else if(bmi< 30){
+        _bmiInterpretation = "Obesitas";
+      }else{
+        _bmiInterpretation = "Data tidak valid";
+      }
+    });
+
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("KALKULATOR BMI"),
+        backgroundColor: Colors.cyan,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _weightController,
+              decoration: InputDecoration(
+                labelText: "Berat Badan (KG)",
+                icon: Icon(Icons.monitor_weight),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
+              ),
+            ),
+            SizedBox(height: 20,),
+             TextField(
+              controller: _heightController,
+              decoration: InputDecoration(
+                labelText: "Tinggi Badan (CM)",
+                icon: Icon(Icons.height),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
+              ),
+            ),
+            SizedBox(height: 30,),
+            ElevatedButton(onPressed: _calculateBMI, 
+            child: Text("Hitung BMI"),
+            ),
+            SizedBox(height: 40,),
+            Text(
+              "HASIL",
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16,),
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.cyan,
+              ),
+              child: Column(
+                children: [
+                  Text(_bmiResult?.toStringAsFixed(1) ?? '  ',
+                  ),
+                  SizedBox(height: 8,),
+                  Text(_bmiInterpretation),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
